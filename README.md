@@ -1,20 +1,86 @@
+<div align="center">
+
 # Zero to Agent — Community Companion
 
-A community-built companion site for builders participating in or exploring [Zero to Agent](https://community.vercel.com/host/zero-to-agent-2026) — the hackathon series organized by Vercel and Google DeepMind.
+**A polished hub for builders joining the [Zero to Agent](https://community.vercel.com/host/zero-to-agent-2026) program** — the Vercel × Google DeepMind series from idea to shipped AI agent.
 
-**Not an official Vercel product.** Community-built and maintained.
+*Community-built. Not an official Vercel product.*
 
-## What this site includes
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-149ECA?style=flat-square&logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com)
 
-- **Hero** — What Zero to Agent is and who it's for
-- **What Is Zero to Agent** — Explainer with the four pillars
-- **How to Get Started** — Step-by-step visual onboarding
-- **Resource Hub** — Curated links to docs, tools, and community (filterable by category)
-- **Event Explorer** — Event cards pulled from a Google Sheet
-- **Build Ideas** — 12 project ideas to lower activation energy
-- **Community Projects** — SQLite-backed showcase with submission form
-- **FAQ** — 10 common questions answered
-- **Footer** — Links, credits, trademark attribution
+**Live:** [zero-to-agent.community](https://zero-to-agent.community)
+
+</div>
+
+---
+
+## Table of contents
+
+- [What’s on the site](#whats-on-the-site)
+- [Tech stack](#tech-stack)
+- [Routes & APIs](#routes--apis)
+- [Getting started](#getting-started)
+- [Environment variables](#environment-variables)
+- [Daily cron (events sync)](#daily-cron-events-sync)
+- [Editing content](#editing-content)
+- [Open Graph & SEO](#open-graph--seo)
+- [Deploying](#deploying)
+- [Trademark](#trademark)
+- [Contributing](#contributing)
+
+---
+
+## What’s on the site
+
+| Area | What you get |
+|------|----------------|
+| **Home** | Hero, lazy ASCII tunnel animation, “What is Zero to Agent”, step-by-step **Get Started**, Discord / social discovery |
+| **Events** | Meetup-style listings (Luma), covers from `images.lumacdn.com`, loading states |
+| **Resources** | Curated links (filterable), Vercel toolbox callouts, production-agent summary, **AI idea generator** |
+| **Explainer** | Long-form “production-grade AI agent” guide |
+| **FAQ** | Q&A from `data/faq.ts` |
+| **Global UX** | Dark / light theme, dot grid + noise, scroll progress, scroll-to-top, toasts, reduced-motion respect |
+| **Insights** | Vercel Analytics & Speed Insights |
+
+The **idea generator** on `/resources` streams suggestions via the Vercel AI SDK + AI Gateway (`google/gemini-2.5-flash-lite`), with per-IP rate limits.
+
+---
+
+## Tech stack
+
+| Layer | Choices |
+|-------|---------|
+| **Framework** | [Next.js 16](https://nextjs.org) (App Router, Server Components), Turbopack in dev |
+| **UI** | React 19, [Tailwind CSS](https://tailwindcss.com) 3, [Geist](https://vercel.com/font) (Sans, Mono, Pixel) |
+| **Motion** | [Framer Motion](https://www.framer.com/motion/), [Lucide](https://lucide.dev) icons |
+| **Theming** | [next-themes](https://github.com/pacocoursey/next-themes), Sonner toasts |
+| **AI** | [Vercel AI SDK](https://sdk.vercel.ai/docs) (`ai`, `@ai-sdk/react`, Gateway + OpenAI packages), [Zod](https://zod.dev) |
+| **Platform** | [@vercel/analytics](https://vercel.com/analytics), [@vercel/speed-insights](https://vercel.com/speed-insights), [@vercel/blob](https://vercel.com/docs/storage/vercel-blob) |
+| **Tooling** | TypeScript 5, ESLint 9 + `eslint-config-next`, [portless](https://www.npmjs.com/package/portless) for local dev (avoids port clashes) |
+| **Extras** | `unicode-animations` (Braille loaders), dynamic OG image (`next/og` + Geist Pixel TTF) |
+
+`next.config.ts` enables security headers, image remote patterns for Luma CDN, asset caching, and `experimental.inlineCss` + `optimizePackageImports` for lucide / framer-motion / geist.
+
+---
+
+## Routes & APIs
+
+| Path | Description |
+|------|-------------|
+| `/` | Landing page |
+| `/events` | Event explorer |
+| `/resources` | Resource hub + AI idea generator |
+| `/explainer` | Production agent guide |
+| `/faq` | FAQ |
+| `/opengraph-image` | Generated 1200×630 OG/Twitter image |
+| `POST /api/generate-idea` | Streams one hackathon idea; needs AI Gateway auth |
+| `GET /api/cron/sync-luma-sheet` | Cron-only: Firecrawl → merge → Blob → revalidate events (`Authorization: Bearer CRON_SECRET`) |
+
+**Redirect:** `/ideas` → `/resources` (permanent).
 
 ---
 
@@ -29,113 +95,87 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
----
-
-## Configuration
-
-### Google Sheet for Events
-
-The Event Explorer section pulls from a Google Sheet you configure.
-
-**Steps:**
-1. Create a Google Sheet with columns for event data (link, title, host, date, city are auto-detected)
-2. Go to **File → Share → Publish to web → CSV**
-3. Copy the Sheet ID from the URL (the long string between `/d/` and `/edit`)
-4. Add it to your environment:
-
-```bash
-# .env.local
-GOOGLE_SHEET_ID=your_sheet_id_here
-```
-
-The parser is defensive — if columns are missing, it gracefully falls back. The only hard requirement is that at least one column contains a valid URL.
-
-### Community Project Submissions
-
-Projects are stored in a local SQLite database (`data/projects.db`, gitignored).
-
-**Submissions:**
-- Users submit via the form in the Community Projects section
-- All submissions are created with `approved = 0`
-- Only `approved = 1` projects appear publicly
-
-**Approving projects (currently manual SQL):**
-```sql
--- Open the database
-sqlite3 data/projects.db
-
--- List pending submissions
-SELECT id, title, url, created_at FROM projects WHERE approved = 0;
-
--- Approve a project
-UPDATE projects SET approved = 1 WHERE id = 1;
-```
-
-For production with higher volume, migrate to [Turso](https://turso.tech) (SQLite-compatible) or [Neon Postgres](https://neon.tech).
+| Script | Purpose |
+|--------|---------|
+| `npm run dev` | `portless run --force next dev` (recommended) |
+| `npm run dev:direct` | Plain `next dev` |
+| `npm run dev:clean` | Clear `.next` (and cache) then dev |
+| `npm run build` / `start` | Production build & server |
+| `npm run lint` | ESLint |
 
 ---
 
-## Where to edit content
+## Environment variables
 
-| What | File |
-|---|---|
-| Resource Hub links | `data/resources.ts` |
-| FAQ questions & answers | `data/faq.ts` |
-| Build ideas | `data/build-ideas.ts` |
-| Sample/mock projects | `data/sample-projects.ts` |
-| Event data source | `GOOGLE_SHEET_ID` env var + `lib/sheets.ts` |
-| Site metadata / SEO | `app/layout.tsx` |
-| Color tokens | `app/globals.css` (`:root` and `.dark`) |
-| Nav links | `components/navigation.tsx` |
+Values go in `.env.local` locally or in the Vercel project dashboard.
 
----
+| Variable | When it’s needed |
+|----------|------------------|
+| `AI_GATEWAY_API_KEY` | Idea generator (`/api/generate-idea`). On Vercel, `VERCEL_OIDC_TOKEN` can be used instead when OIDC is wired for AI Gateway. |
+| `CRON_SECRET` | Bearer secret for `/api/cron/sync-luma-sheet` (must match Vercel Cron auth). |
+| `FIRECRAWL_API_KEY` | Full automated Luma sheet scrape in cron (see `lib/luma-sync`). |
+| `BLOB_READ_WRITE_TOKEN` | Persist merged event JSON to Vercel Blob during cron. |
+| `NEXT_PUBLIC_DISCORD_INVITE` | Override default Discord invite (`data/community.ts`). |
+| `NEXT_PUBLIC_SITE_URL` | Non-production canonical URL override (preview / local). Production OG uses `https://zero-to-agent.community` from `lib/site-url.ts`. |
 
-## How to swap mock data for real data
-
-**Community Projects:**  
-The project list defaults to `data/sample-projects.ts` when no approved database entries exist. Once you have approved submissions in the SQLite database, they will automatically replace the sample data — no code changes needed.
-
-**Events:**  
-Set `GOOGLE_SHEET_ID` in your environment. The mock/empty state disappears automatically.
+Never commit real secrets. `.env.local` should stay gitignored.
 
 ---
 
-## Tech stack
+## Daily cron (events sync)
 
-- [Next.js 15](https://nextjs.org) — App Router, Server Components
-- [React 19](https://react.dev)
-- [TypeScript](https://typescriptlang.org)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Framer Motion](https://framer.motion.com) — Animations
-- [Geist](https://vercel.com/font) — Vercel's font (Sans + Mono)
-- [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) — Project submissions database
-- [Zod](https://zod.dev) — Schema validation
-- [Sonner](https://sonner.emilkowal.ski) — Toast notifications
-- [next-themes](https://github.com/pacocoursey/next-themes) — Dark/light mode
-- [lucide-react](https://lucide.dev) — Icons
+`vercel.json` schedules **`/api/cron/sync-luma-sheet`** at **08:00 UTC** daily. The handler:
+
+1. Authenticates with `Authorization: Bearer <CRON_SECRET>`.
+2. Runs `runLumaSheetSync()` (Firecrawl + static seed + optional Blob merge).
+3. Calls `revalidateTag('luma-sheet', 'max')` so `/events` picks up fresh data.
+
+`maxDuration` is **300s** for long Firecrawl runs on Fluid / Pro.
+
+---
+
+## Editing content
+
+| What to change | File(s) |
+|----------------|---------|
+| Resource links & categories | `data/resources.ts` |
+| FAQ copy | `data/faq.ts` |
+| Event seed / slug → cover map | `data/events.ts` + sync pipeline in `lib/` |
+| Discord URL / label | `data/community.ts` or `NEXT_PUBLIC_DISCORD_INVITE` |
+| Vercel social links (footer) | `data/vercel-social.ts` |
+| Site title, description, OG/Twitter text | `app/layout.tsx` |
+| OG **visual** (layout, fonts, colors) | `app/opengraph-image.tsx` + `assets/fonts/GeistPixel-Square.ttf` |
+| Nav & section anchors | `components/navigation.tsx` |
+| Design tokens (light/dark) | `app/globals.css` (`:root`, `.dark`) |
+
+**Maintainer scripts** (optional): `scripts/fetch-luma-covers.mjs`, `scripts/fix-one.mjs`, `scripts/debug-one.mjs` — helpers for Luma cover / HTML debugging (see file headers).
+
+---
+
+## Open Graph & SEO
+
+- **`metadataBase`** and Open Graph URLs resolve to **`https://zero-to-agent.community`** in production (`lib/site-url.ts`).
+- **`opengraph-image.tsx`** renders a 1200×630 PNG via `ImageResponse` (Geist Pixel + Geist Mono; pixel font uses TTF because Satori does not support WOFF2).
+- Layout sets explicit `openGraph.images` and `twitter.images` to **`/opengraph-image`** so social crawlers see one stable image URL.
 
 ---
 
 ## Deploying
 
-```bash
-# Deploy to Vercel
-npx vercel
-
-# Set environment variables in Vercel dashboard or CLI
-npx vercel env add GOOGLE_SHEET_ID
-```
-
-Note: `better-sqlite3` requires a native build. Vercel's Node.js runtime supports this. If you encounter issues, ensure your project is using the **Node.js** runtime (not Edge) for API routes.
+1. Push to GitHub and import the repo on [Vercel](https://vercel.com), or use `vercel` CLI.
+2. Set the [environment variables](#environment-variables) your features need (at minimum AI Gateway for ideas; Blob + Firecrawl + `CRON_SECRET` for full cron).
+3. Attach the custom domain **`zero-to-agent.community`** in the Vercel project and point DNS.
 
 ---
 
-## Trademark notice
+## Trademark
 
-Vercel, the Vercel design, Next.js, v0, and related marks, designs and logos are trademarks or registered trademarks of Vercel, Inc. or its affiliates in the US and other countries. This site is not affiliated with or endorsed by Vercel, Inc.
+Vercel, the Vercel design, Next.js, v0, and related marks, designs, and logos are trademarks or registered trademarks of Vercel, Inc. or its affiliates in the US and other countries. This site is **not** affiliated with or endorsed by Vercel, Inc.
 
 ---
 
 ## Contributing
 
-PRs welcome. This is a community project — open an issue or submit a PR on [GitHub](https://github.com/New-Retr0/zero-to-agent).
+Issues and PRs are welcome. This is a community project: [github.com/New-Retr0/zero-to-agent](https://github.com/New-Retr0/zero-to-agent).
+
+The repo may include **`.agents/`** skills and tooling for Cursor/Codex-style workflows; they are optional and not required to run the app.
