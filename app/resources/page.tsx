@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { ResourceHub } from '@/components/resource-hub'
 import { ProductionAgentGuideSummary } from '@/components/production-agent-guide-summary'
 import { VercelToolbox } from '@/components/vercel-toolbox'
+import { AgentSkillsSection } from '@/components/agent-skills-section'
 import { IdeaGenerator } from '@/components/idea-generator'
 
 export const metadata: Metadata = {
@@ -15,6 +16,7 @@ export default function ResourcesPage() {
     <main className="flex-1 pt-nav">
       <ResourceHub />
       <VercelToolbox />
+      <AgentSkillsSection />
       <ProductionAgentGuideSummary />
       <IdeaGenerator />
     </main>

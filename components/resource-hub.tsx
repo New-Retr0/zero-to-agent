@@ -6,14 +6,16 @@ import { ExternalLink } from 'lucide-react'
 import { SectionReveal } from './section-reveal'
 import { SectionHeading } from './ui/section-heading'
 import { Badge } from './ui/badge'
-import { resources, type Resource } from '@/data/resources'
+import { resources, type Resource, type ResourceGroup } from '@/data/resources'
 
-const categoryFilters = [
+const groupFilters: { id: 'all' | ResourceGroup; label: string }[] = [
   { id: 'all', label: 'All' },
-  { id: 'getting-started', label: 'Getting Started' },
-  { id: 'building', label: 'Building' },
-  { id: 'deployment', label: 'Deployment' },
-  { id: 'docs', label: 'Docs' },
+  { id: 'get-started', label: 'Get started' },
+  { id: 'build', label: 'Build' },
+  { id: 'sdks', label: 'SDKs' },
+  { id: 'scale', label: 'Scale' },
+  { id: 'secure', label: 'Secure' },
+  { id: 'learn', label: 'Learn' },
   { id: 'community', label: 'Community' },
   { id: 'help', label: 'Help' },
 ]
@@ -45,7 +47,7 @@ function ResourceCard({ resource, index }: { resource: Resource; index: number }
               {resource.brandMark}
             </span>
           )}
-          <Badge variant="default">{resource.categoryLabel}</Badge>
+          <Badge variant="default">{resource.groupLabel}</Badge>
         </div>
         <ExternalLink
           size={13}
@@ -83,12 +85,12 @@ function ResourceCard({ resource, index }: { resource: Resource; index: number }
 }
 
 export function ResourceHub() {
-  const [activeCategory, setActiveCategory] = useState('all')
+  const [activeGroup, setActiveGroup] = useState<'all' | ResourceGroup>('all')
 
   const filtered = useMemo(() => {
-    if (activeCategory === 'all') return resources
-    return resources.filter((r) => r.category === activeCategory)
-  }, [activeCategory])
+    if (activeGroup === 'all') return resources
+    return resources.filter((r) => r.group === activeGroup)
+  }, [activeGroup])
 
   return (
     <section
@@ -100,7 +102,7 @@ export function ResourceHub() {
           <SectionHeading
             label="Resource Hub"
             title="Everything you need to build."
-            description="Curated links to the tools, docs, and communities that matter. No fluff, no rabbit holes — just what you need to ship."
+            description="Filters follow Vercel-style pillars — Get started through Scale and Secure, plus Learn, Community, and Help. v0, the AI SDK, and Agent Browser live here; the Vercel Toolbox below is only AI SDK feature deep links."
           />
         </SectionReveal>
 
@@ -108,15 +110,15 @@ export function ResourceHub() {
           <div
             className="mb-10 -mx-1 flex gap-2 overflow-x-auto overflow-y-visible pb-1 pl-1 pr-3 scrollbar-hide sm:mx-0 sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pl-0 sm:pr-0"
             role="group"
-            aria-label="Filter by category"
+            aria-label="Filter by group"
           >
-            {categoryFilters.map((filter) => (
+            {groupFilters.map((filter) => (
               <button
                 key={filter.id}
                 type="button"
-                onClick={() => setActiveCategory(filter.id)}
+                onClick={() => setActiveGroup(filter.id)}
                 className={`shrink-0 font-[family-name:var(--font-geist-mono)] text-[10px] tracking-[0.12em] uppercase px-3 py-1.5 rounded-lg border transition-colors duration-200 ${
-                  activeCategory === filter.id ? chipActive : chipIdle
+                  activeGroup === filter.id ? chipActive : chipIdle
                 }`}
               >
                 {filter.label}
@@ -139,7 +141,7 @@ export function ResourceHub() {
 
         {filtered.length === 0 && (
           <p className="py-12 text-center text-[14px] text-[var(--text-secondary)]">
-            No resources in this category.
+            No resources in this group.
           </p>
         )}
       </div>

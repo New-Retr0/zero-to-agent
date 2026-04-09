@@ -16,14 +16,8 @@ const tools: ToolItem[] = [
   {
     name: 'AI SDK',
     mark: '▲',
-    description: 'The core TypeScript library for building AI apps. streamText, useChat, tool calling, agent loops, structured output — everything you need to wire up an LLM.',
+    description: 'Entry point for the stack — streamText, useChat, tool calling, agents, and models. Use Resource Hub for v0 and Agent Browser; this section highlights specific AI SDK capabilities.',
     url: 'https://sdk.vercel.ai',
-  },
-  {
-    name: 'v0',
-    mark: 'v0',
-    description: 'Generate full UI scaffolds and components from a text prompt. The fastest path from idea to working prototype.',
-    url: 'https://v0.dev',
   },
   {
     name: 'AI Gateway',
@@ -60,12 +54,6 @@ const tools: ToolItem[] = [
     mark: '▲',
     description: 'Local debugging and observability for AI calls. Inspect prompts, responses, tool calls, and latency in real-time during development.',
     url: 'https://ai-sdk.dev/docs/ai-sdk-core/devtools',
-  },
-  {
-    name: 'Agent Browser',
-    mark: '▲',
-    description: 'CLI-first browser automation built for AI agents. Snapshots, clicks, and form fills with zero DOM token overhead — 5.7x more efficient than MCP-based tools.',
-    url: 'https://github.com/vercel-labs/agent-browser',
   },
 ]
 
@@ -122,7 +110,7 @@ export function VercelToolbox() {
           <SectionHeading
             label="Vercel Toolbox"
             title="Tools for building agents."
-            description="The Vercel stack for AI. Everything you need to go from idea to deployed agent — streaming, tool calling, structured output, and production-ready UI."
+            description="AI SDK feature map — Gateway, UI, structured output, MCP, and DevTools. Not a second catalog: use Resource Hub above for v0, Agent Browser, deployment, and community links."
           />
         </SectionReveal>
 

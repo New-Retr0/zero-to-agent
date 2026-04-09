@@ -31,6 +31,7 @@
 - [Deploying](#deploying)
 - [Trademark](#trademark)
 - [Contributing](#contributing)
+- [Agent skills (Vercel)](#agent-skills-vercel)
 
 ---
 
@@ -178,4 +179,52 @@ Vercel, the Vercel design, Next.js, v0, and related marks, designs, and logos ar
 
 Issues and PRs are welcome. This is a community project: [github.com/New-Retr0/zero-to-agent](https://github.com/New-Retr0/zero-to-agent).
 
-The repo may include **`.agents/`** skills and tooling for Cursor/Codex-style workflows; they are optional and not required to run the app.
+---
+
+## Agent skills (Vercel)
+
+**What skills are.** An *agent skill* is a pack of instructions (usually Markdown, sometimes scripts) that a coding agent can apply when a task matches — like a shared playbook for deployments, React patterns, or UI review criteria, so the model follows your standards instead of improvising every time.
+
+**The CLI.** The open-source [`skills`](https://github.com/vercel-labs/skills) CLI (`npx skills add …`) installs skills into the folders your agent expects, for many editors and agents — no hand-copying files.
+
+**Vercel’s bundle.** [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) is Vercel’s official collection: guidance aligned with the Vercel platform, Next.js, React, production deploys, and the Web Interface Guidelines.
+
+This repo may include copies under **`.agents/skills/`**; you can also install or refresh from the CLI below.
+
+### Official bundle: `vercel-labs/agent-skills`
+
+Install **all** Vercel-published skills from [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) (project-local, skips prompts):
+
+```bash
+npx skills add vercel-labs/agent-skills -y
+```
+
+Install globally for every repo (`~/.agents/skills/` or equivalent):
+
+```bash
+npx skills add vercel-labs/agent-skills -g -y
+```
+
+List skill names and descriptions without installing:
+
+```bash
+npx skills add vercel-labs/agent-skills --list
+```
+
+### Install one skill (copy and paste)
+
+Use `--skill` with the **skill id** from the table (same names the CLI prints in `--list`):
+
+| Skill | Install command |
+|--------|------------------|
+| **vercel-composition-patterns** — React composition patterns (compound components, providers, React 19) | `npx skills add vercel-labs/agent-skills --skill vercel-composition-patterns -y` |
+| **deploy-to-vercel** — Deploy to Vercel from the agent | `npx skills add vercel-labs/agent-skills --skill deploy-to-vercel -y` |
+| **vercel-react-best-practices** — React / Next.js performance guidelines | `npx skills add vercel-labs/agent-skills --skill vercel-react-best-practices -y` |
+| **vercel-react-native-skills** — React Native / Expo best practices | `npx skills add vercel-labs/agent-skills --skill vercel-react-native-skills -y` |
+| **vercel-react-view-transitions** — React View Transition API / Next.js | `npx skills add vercel-labs/agent-skills --skill vercel-react-view-transitions -y` |
+| **vercel-cli-with-tokens** — Vercel CLI with token auth | `npx skills add vercel-labs/agent-skills --skill vercel-cli-with-tokens -y` |
+| **web-design-guidelines** — Web Interface Guidelines / UX & a11y reviews | `npx skills add vercel-labs/agent-skills --skill web-design-guidelines -y` |
+
+Browse the catalog: [skills.sh — vercel-labs/agent-skills](https://skills.sh/vercel-labs/agent-skills).
+
+Skills are optional and not required to run this app.
