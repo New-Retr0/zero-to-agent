@@ -51,6 +51,16 @@ export const resources: Resource[] = [
     brandMark: '▲',
   },
   {
+    title: 'Vercel Templates',
+    description:
+      'Browse official and community templates — AI chatbots, commerce, blogs, SaaS, and more. Filter by use case, framework, database, and auth to jumpstart a new repo.',
+    url: 'https://vercel.com/new/templates',
+    group: 'get-started',
+    groupLabel: 'Get started',
+    tags: ['Templates', 'Starter'],
+    brandMark: '▲',
+  },
+  {
     title: 'Vercel Agent Browser',
     description:
       'CLI-first browser automation built for AI agents. 5.7x more test cycles under the same context budget vs MCP tools. Snapshot, click, fill — zero DOM token overhead.',
